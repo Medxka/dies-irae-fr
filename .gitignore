@@ -1,6 +1,3 @@
-# Don't commit raw chunk files (too large, distributed separately)
-chunks/
-
 # Don't commit compiled binaries or game files
 *.dat
 *.exe
