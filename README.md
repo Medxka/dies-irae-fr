@@ -3,6 +3,8 @@
 Projet communautaire de traduction française de **Dies Irae ~Amantes amentes~** (VN, Light/Âge).
 Ce repo contient les outils pour extraire, traduire et réinjecter le texte du jeu.
 
+**👾 Rejoins le Discord pour participer à la traduction : [discord.gg/76MkXzs9UX](https://discord.gg/76MkXzs9UX)**
+
 ---
 
 ## Structure du repo
@@ -60,7 +62,7 @@ Ce repo contient les outils pour extraire, traduire et réinjecter le texte du j
 | 09    | —         | Disponible |
 | 10    | —         | Disponible |
 
-Pour prendre en charge un chunk, ouvrir une issue ou contacter sur Discord.
+Pour prendre en charge un chunk, ouvrir une issue ou rejoindre le [Discord](https://discord.gg/76MkXzs9UX).
 
 ---
 
