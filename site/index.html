@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dies Irae — Patch Français</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=IM+Fell+English:ital@0;1&family=Inter:wght@300;400;500&display=swap');
+
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #e8c96d;
+      --red: #8b1a1a;
+      --bg: #0a0a0b;
+      --bg2: #111115;
+      --bg3: #1a1a20;
+      --text: #d4c8b0;
+      --muted: #6b6358;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 2rem;
+      position: relative;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(139,26,26,0.15) 0%, transparent 70%),
+        radial-gradient(ellipse at 50% 100%, rgba(201,168,76,0.05) 0%, transparent 60%);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 1;
+    }
+
+    .hero-ornament {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.4em;
+      color: var(--gold);
+      opacity: 0.6;
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: clamp(3rem, 8vw, 7rem);
+      letter-spacing: 0.1em;
+      line-height: 1;
+      color: #fff;
+      text-shadow: 0 0 60px rgba(201,168,76,0.3), 0 0 120px rgba(139,26,26,0.2);
+      margin-bottom: 0.3em;
+    }
+
+    .hero h1 span {
+      color: var(--gold);
+    }
+
+    .hero-sub {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 1.25rem;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-tagline {
+      font-size: 0.85rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.5;
+      margin-bottom: 3.5rem;
+    }
+
+    /* ─── PROGRESS ─── */
+    .progress-card {
+      background: var(--bg3);
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 8px;
+      padding: 1.5rem 2.5rem;
+      margin-bottom: 3rem;
+      min-width: 320px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .progress-label span:last-child {
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--red), var(--gold));
+      border-radius: 2px;
+      width: 0%;
+      transition: width 1s ease;
+    }
+
+    /* ─── BUTTONS ─── */
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: #0a0a0b;
+    }
+
+    .btn-primary:hover {
+      background: var(--gold-light);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(201,168,76,0.25);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ─── SECTIONS ─── */
+    section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .section-header::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(201,168,76,0.3), transparent);
+    }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+
+    /* ─── INSTALL STEPS ─── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 2.5rem 1fr;
+      gap: 1rem;
+      align-items: start;
+      padding: 1.25rem;
+      background: var(--bg2);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 6px;
+      transition: border-color 0.2s;
+    }
+
+    .step:hover { border-color: rgba(201,168,76,0.2); }
+
+    .step-num {
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+      color: var(--gold);
+      opacity: 0.4;
+      line-height: 1;
+      padding-top: 2px;
+    }
+
+    .step-title {
+      font-weight: 500;
+      font-size: 0.95rem;
+      margin-bottom: 0.35rem;
+      color: #fff;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: 'Courier New', monospace;
+      background: rgba(255,255,255,0.06);
+      padding: 0.15em 0.4em;
+      border-radius: 3px;
+      font-size: 0.85em;
+      color: var(--gold-light);
+    }
+
+    /* ─── CONTRIBUTORS ─── */
+    .contrib-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .contrib-card {
+      background: var(--bg2);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 6px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .contrib-chunk {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+      opacity: 0.3;
+      margin-bottom: 0.5rem;
+    }
+
+    .contrib-name {
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .contrib-status {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    .contrib-status.done { color: #5a9e5a; }
+    .contrib-status.progress { color: var(--gold); }
+
+    /* ─── FAQ ─── */
+    .faq { display: flex; flex-direction: column; gap: 1px; }
+
+    details {
+      background: var(--bg2);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    details + details { margin-top: 4px; }
+
+    summary {
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--text);
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; color: var(--gold); opacity: 0.5; font-size: 1.1rem; }
+    details[open] summary::after { content: '−'; }
+
+    details p {
+      padding: 0 1.25rem 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.15), transparent);
+      margin: 0;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    footer a { color: var(--gold); opacity: 0.6; text-decoration: none; }
+    footer a:hover { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-ornament">✦ Traduction Française ✦</div>
+    <h1>Dies <span>Irae</span></h1>
+    <p class="hero-sub">Acta est fabula</p>
+    <p class="hero-tagline">Visual Novel • Patch FR Communautaire</p>
+
+    <div class="progress-card">
+      <div class="progress-label">
+        <span>Progression traduction</span>
+        <span id="pct">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="bar"></div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <a href="#download" class="btn btn-primary">
+        ↓ Télécharger le patch
+      </a>
+      <a href="#install" class="btn btn-secondary">
+        Guide d'installation
+      </a>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- DOWNLOAD -->
+  <section id="download">
+    <div class="section-header">
+      <span class="section-title">Téléchargement</span>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Patch français (data5.dat)</div>
+          <div class="step-desc">
+            Archive contenant le script traduit. Nécessite Dies Irae ~Amantes amentes~ (Steam ou version JP).<br /><br />
+            <a href="patch/data5.dat" class="btn btn-primary" style="display:inline-flex;margin-top:0.5rem;font-size:0.8rem;padding:0.6rem 1.5rem;">
+              ↓ data5.dat
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- INSTALL -->
+  <section id="install">
+    <div class="section-header">
+      <span class="section-title">Installation</span>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">I</div>
+        <div>
+          <div class="step-title">Avoir Dies Irae installé</div>
+          <div class="step-desc">Version Steam recommandée. Langue de base : anglais ou japonais.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">II</div>
+        <div>
+          <div class="step-title">Localiser le dossier du jeu</div>
+          <div class="step-desc">
+            Sur Steam : clic droit sur Dies Irae → <em>Propriétés → Fichiers locaux → Parcourir</em>.<br />
+            Le dossier contient <code>data4.dat</code>, <code>DiesIrae.exe</code>, etc.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">III</div>
+        <div>
+          <div class="step-title">Copier data5.dat</div>
+          <div class="step-desc">
+            Placer <code>data5.dat</code> dans le dossier du jeu, au même niveau que <code>data4.dat</code>.<br />
+            Le moteur Malie charge automatiquement <code>data5</code> en priorité.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">IV</div>
+        <div>
+          <div class="step-title">Lancer le jeu</div>
+          <div class="step-desc">Le texte français apparaît directement. Aucun autre fichier à modifier.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- CONTRIBUTORS -->
+  <section id="team">
+    <div class="section-header">
+      <span class="section-title">Équipe de traduction</span>
+    </div>
+    <div class="contrib-grid" id="contrib-grid">
+      <!-- populated by JS -->
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="section-header">
+      <span class="section-title">FAQ</span>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>Le jeu crash après installation du patch</summary>
+        <p>Vérifier que <code>data5.dat</code> est bien dans le dossier racine du jeu (là où se trouve <code>DiesIrae.exe</code>). Le fichier ne doit pas être dans un sous-dossier.</p>
+      </details>
+      <details>
+        <summary>Certains textes sont encore en anglais</summary>
+        <p>La traduction est en cours. Les passages non traduits affichent le texte anglais d'origine. Revenir régulièrement pour les mises à jour.</p>
+      </details>
+      <details>
+        <summary>Compatible avec les sauvegardes existantes ?</summary>
+        <p>Oui. Le patch ne modifie que le script texte, pas la logique du jeu. Les sauvegardes sont entièrement compatibles.</p>
+      </details>
+      <details>
+        <summary>Version Steam vs version JP ?</summary>
+        <p>Le patch est basé sur la version anglaise Steam. Fonctionne sur la version Steam EN. Compatibilité version JP non garantie.</p>
+      </details>
+      <details>
+        <summary>Comment contribuer à la traduction ?</summary>
+        <p>Contacter l'équipe via le Discord ou ouvrir une issue sur le dépôt GitHub. Des chunks de ~1 000 lignes sont disponibles à l'attribution.</p>
+      </details>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <footer>
+    <p>Patch non officiel — fan project communautaire</p>
+    <p style="margin-top:0.5rem; opacity:0.5;">Dies Irae ~Amantes amentes~ © Light • Traduction FR par la communauté</p>
+  </footer>
+
+  <script>
+    // ─── Config ────────────────────────────────────────────────────────────────
+    const TOTAL_ENTRIES = 59608;
+
+    // Update this array as translation progresses
+    // status: 'pending' | 'progress' | 'done'
+    const contributors = [
+      { chunk: '01', name: '— libre —', entries: '0–5960',     status: 'pending' },
+      { chunk: '02', name: '— libre —', entries: '5961–11921',  status: 'pending' },
+      { chunk: '03', name: '— libre —', entries: '11922–17882', status: 'pending' },
+      { chunk: '04', name: '— libre —', entries: '17883–23843', status: 'pending' },
+      { chunk: '05', name: '— libre —', entries: '23844–29804', status: 'pending' },
+      { chunk: '06', name: '— libre —', entries: '29805–35765', status: 'pending' },
+      { chunk: '07', name: '— libre —', entries: '35766–41726', status: 'pending' },
+      { chunk: '08', name: '— libre —', entries: '41727–47687', status: 'pending' },
+      { chunk: '09', name: '— libre —', entries: '47688–53648', status: 'pending' },
+      { chunk: '10', name: '— libre —', entries: '53649–59607', status: 'pending' },
+    ];
+
+    // ─── Progress bar ──────────────────────────────────────────────────────────
+    const doneChunks = contributors.filter(c => c.status === 'done').length;
+    const inProgress = contributors.filter(c => c.status === 'progress').length;
+    const pct = Math.round((doneChunks + inProgress * 0.5) / contributors.length * 100);
+
+    document.getElementById('pct').textContent = pct + '%';
+    setTimeout(() => {
+      document.getElementById('bar').style.width = pct + '%';
+    }, 200);
+
+    // ─── Contributors grid ─────────────────────────────────────────────────────
+    const grid = document.getElementById('contrib-grid');
+    contributors.forEach(c => {
+      const statusLabel = { pending: 'Disponible', progress: 'En cours…', done: 'Terminé ✓' }[c.status];
+      grid.innerHTML += `
+        <div class="contrib-card">
+          <div class="contrib-chunk">${c.chunk}</div>
+          <div class="contrib-name">${c.name}</div>
+          <div class="contrib-status ${c.status}">${statusLabel}</div>
+          <div style="font-size:0.7rem;color:var(--muted);margin-top:0.35rem;">${c.entries}</div>
+        </div>`;
+    });
+  </script>
+</body>
+</html>

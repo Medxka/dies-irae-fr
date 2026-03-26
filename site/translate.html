@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dies Irae — Outil de traduction</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;500&display=swap');
+
+    :root {
+      --gold: #c9a84c;
+      --red: #8b1a1a;
+      --bg: #0a0a0b;
+      --bg2: #111115;
+      --bg3: #1a1a20;
+      --text: #d4c8b0;
+      --muted: #6b6358;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── TOPBAR ─── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--bg2);
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      flex-shrink: 0;
+    }
+
+    .topbar h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      color: var(--gold);
+      margin-right: auto;
+    }
+
+    .topbar-info {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .topbar-info span { color: var(--gold); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+
+    .btn-gold { background: var(--gold); color: #0a0a0b; }
+    .btn-gold:hover { background: #e8c96d; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,0.1); }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ─── DROP ZONE ─── */
+    .drop-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      z-index: 10;
+    }
+
+    .drop-box {
+      border: 2px dashed rgba(201,168,76,0.3);
+      border-radius: 12px;
+      padding: 4rem 5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .drop-box:hover, .drop-box.dragover {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.05);
+    }
+
+    .drop-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+    .drop-title { font-family: 'Cinzel', serif; font-size: 1.25rem; color: var(--gold); margin-bottom: 0.5rem; }
+    .drop-sub { color: var(--muted); font-size: 0.85rem; }
+
+    #file-input { display: none; }
+
+    /* ─── MAIN LAYOUT ─── */
+    .main {
+      display: none;
+      flex: 1;
+      overflow: hidden;
+      flex-direction: column;
+    }
+
+    .main.active { display: flex; }
+
+    /* ─── PROGRESS STRIP ─── */
+    .progress-strip {
+      height: 3px;
+      background: rgba(255,255,255,0.05);
+      flex-shrink: 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--red), var(--gold));
+      transition: width 0.3s;
+    }
+
+    /* ─── NAVIGATOR ─── */
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 1.5rem;
+      background: var(--bg2);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      flex-shrink: 0;
+    }
+
+    .nav-idx {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .nav-idx input {
+      width: 70px;
+      background: var(--bg3);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 3px;
+      color: var(--text);
+      font-size: 0.8rem;
+      padding: 0.25rem 0.5rem;
+      text-align: center;
+    }
+
+    .filter-btn {
+      font-size: 0.7rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 3px;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+
+    .filter-btn.active {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ─── EDITOR ─── */
+    .editor {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      overflow: hidden;
+    }
+
+    .pane {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .pane + .pane {
+      border-left: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .pane-header {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      background: var(--bg2);
+      flex-shrink: 0;
+    }
+
+    .entry-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .entry-list::-webkit-scrollbar { width: 4px; }
+    .entry-list::-webkit-scrollbar-track { background: transparent; }
+    .entry-list::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.2); border-radius: 2px; }
+
+    .entry {
+      background: var(--bg3);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 5px;
+      overflow: hidden;
+      transition: border-color 0.15s;
+      cursor: pointer;
+    }
+
+    .entry:hover { border-color: rgba(201,168,76,0.15); }
+    .entry.selected { border-color: rgba(201,168,76,0.4); }
+    .entry.translated { border-left: 2px solid #5a9e5a; }
+    .entry.untranslated { border-left: 2px solid rgba(255,255,255,0.06); }
+
+    .entry-index {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.65rem;
+      color: var(--muted);
+      background: rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .entry-index .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      align-self: center;
+    }
+
+    .entry.translated .dot { background: #5a9e5a; }
+
+    .entry-text {
+      padding: 0.6rem 0.75rem;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+
+    /* ─── SINGLE EDITOR ─── */
+    .single-editor {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      gap: 1rem;
+      overflow-y: auto;
+    }
+
+    .source-box {
+      background: var(--bg3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 1rem;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+
+    .source-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    textarea {
+      flex: 1;
+      min-height: 150px;
+      background: var(--bg3);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 6px;
+      padding: 1rem;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color 0.15s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .editor-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- DROP ZONE -->
+  <div class="drop-overlay" id="drop-overlay">
+    <div class="drop-box" id="drop-box" onclick="document.getElementById('file-input').click()">
+      <div class="drop-icon">◆</div>
+      <div class="drop-title">Charger un chunk</div>
+      <div class="drop-sub">Glisser un fichier chunk_XX.txt ici<br />ou cliquer pour sélectionner</div>
+    </div>
+    <div style="font-size:0.75rem;color:var(--muted);text-align:center;">
+      Les fichiers sont traités localement dans votre navigateur.<br />
+      Aucune donnée n'est envoyée sur internet.
+    </div>
+    <input type="file" id="file-input" accept=".txt" />
+  </div>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <h1>Dies Irae ◆ Traduction</h1>
+    <span class="topbar-info" id="stats">—</span>
+    <button class="btn btn-outline" onclick="document.getElementById('file-input2').click()">↑ Charger</button>
+    <button class="btn btn-gold" id="export-btn" onclick="exportFile()">↓ Exporter</button>
+    <input type="file" id="file-input2" accept=".txt" style="display:none" onchange="loadFile(this)" />
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+    <div class="progress-strip"><div class="progress-fill" id="prog"></div></div>
+
+    <div class="nav-bar">
+      <button class="btn btn-outline" onclick="navigate(-1)">← Préc</button>
+      <span class="nav-idx">
+        Entrée <input type="number" id="nav-input" min="0" onchange="goTo(parseInt(this.value))" />
+        / <span id="total-count">0</span>
+      </span>
+      <button class="btn btn-outline" onclick="navigate(1)">Suiv →</button>
+      <div style="flex:1"></div>
+      <button class="filter-btn" id="filter-all" onclick="setFilter('all')">Toutes</button>
+      <button class="filter-btn" id="filter-todo" onclick="setFilter('todo')">À traduire</button>
+      <button class="filter-btn" id="filter-done" onclick="setFilter('done')">Traduites</button>
+    </div>
+
+    <div class="editor">
+      <!-- LEFT: list -->
+      <div class="pane">
+        <div class="pane-header">Entrées</div>
+        <div class="entry-list" id="entry-list"></div>
+      </div>
+
+      <!-- RIGHT: editor -->
+      <div class="pane">
+        <div class="pane-header">Édition</div>
+        <div class="single-editor" id="single-editor">
+          <div style="color:var(--muted);font-size:0.85rem;margin:auto;text-align:center;opacity:0.5;">
+            Sélectionner une entrée
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── State ─────────────────────────────────────────────────────────────────
+    let entries = [];      // { index, original, translation }
+    let current = -1;
+    let filter = 'all';
+    let filtered = [];
+
+    // ─── Parsing ───────────────────────────────────────────────────────────────
+    function parseChunk(text) {
+      // Normalize line endings
+      text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      const result = [];
+
+      // Match blocks: ◇XXXXXXXX◇...◆XXXXXXXX◆...
+      const blockRe = /◇(\d{8})◇([\s\S]*?)(?=\n◇|\n*$)(?:\n◆\d{8}◆([\s\S]*?))?(?=\n\n◇|\n*$)/gm;
+
+      // Simpler approach: split on empty lines
+      const rawBlocks = text.split(/\n\n+/);
+      for (const block of rawBlocks) {
+        if (!block.trim()) continue;
+        const lines = block.split('\n');
+        let origLines = [], transLines = [];
+        let inTrans = false, idx = null;
+
+        for (const line of lines) {
+          const origMatch = line.match(/^◇(\d{8})◇(.*)$/);
+          const transMatch = line.match(/^◆(\d{8})◆(.*)$/);
+          if (origMatch) {
+            idx = origMatch[1];
+            origLines = [origMatch[2]];
+            inTrans = false;
+          } else if (transMatch) {
+            transLines = [transMatch[2]];
+            inTrans = true;
+          } else if (inTrans) {
+            transLines.push(line);
+          } else if (idx) {
+            origLines.push(line);
+          }
+        }
+
+        if (idx !== null) {
+          result.push({
+            index: idx,
+            original: origLines.join('\n').trimEnd(),
+            translation: transLines.join('\n').trimEnd(),
+          });
+        }
+      }
+      return result;
+    }
+
+    // ─── File loading ──────────────────────────────────────────────────────────
+    function loadFile(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        entries = parseChunk(e.target.result);
+        document.getElementById('drop-overlay').style.display = 'none';
+        document.getElementById('main').classList.add('active');
+        applyFilter();
+        updateStats();
+        goTo(0);
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    document.getElementById('file-input').addEventListener('change', function() { loadFile(this); });
+
+    // Drag & drop
+    const dropBox = document.getElementById('drop-box');
+    dropBox.addEventListener('dragover', e => { e.preventDefault(); dropBox.classList.add('dragover'); });
+    dropBox.addEventListener('dragleave', () => dropBox.classList.remove('dragover'));
+    dropBox.addEventListener('drop', e => {
+      e.preventDefault();
+      dropBox.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          entries = parseChunk(ev.target.result);
+          document.getElementById('drop-overlay').style.display = 'none';
+          document.getElementById('main').classList.add('active');
+          applyFilter();
+          updateStats();
+          goTo(0);
+        };
+        reader.readAsText(file, 'UTF-8');
+      }
+    });
+
+    // ─── Filter ────────────────────────────────────────────────────────────────
+    function setFilter(f) {
+      filter = f;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('filter-' + f).classList.add('active');
+      applyFilter();
+    }
+
+    function applyFilter() {
+      if (filter === 'all') filtered = entries;
+      else if (filter === 'todo') filtered = entries.filter(e => !e.translation);
+      else if (filter === 'done') filtered = entries.filter(e => !!e.translation);
+
+      document.getElementById('total-count').textContent = filtered.length;
+      renderList();
+    }
+
+    // ─── List rendering ────────────────────────────────────────────────────────
+    function renderList() {
+      const list = document.getElementById('entry-list');
+      list.innerHTML = '';
+      filtered.forEach((e, i) => {
+        const div = document.createElement('div');
+        div.className = 'entry ' + (e.translation ? 'translated' : 'untranslated') + (i === current ? ' selected' : '');
+        div.dataset.fi = i;
+        div.innerHTML = `
+          <div class="entry-index">
+            <span>#${e.index}</span>
+            <span class="dot"></span>
+          </div>
+          <div class="entry-text">${escHtml(e.original.substring(0, 100))}${e.original.length > 100 ? '…' : ''}</div>`;
+        div.onclick = () => selectEntry(i);
+        list.appendChild(div);
+      });
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ─── Selection ─────────────────────────────────────────────────────────────
+    function selectEntry(filteredIdx) {
+      current = filteredIdx;
+      document.getElementById('nav-input').value = filteredIdx;
+
+      // Highlight
+      document.querySelectorAll('.entry').forEach((el, i) => {
+        el.classList.toggle('selected', i === filteredIdx);
+      });
+
+      // Scroll into view
+      const el = document.querySelector(`.entry[data-fi="${filteredIdx}"]`);
+      if (el) el.scrollIntoView({ block: 'nearest' });
+
+      const entry = filtered[filteredIdx];
+      if (!entry) return;
+
+      const editor = document.getElementById('single-editor');
+      editor.innerHTML = `
+        <div>
+          <div class="source-label">Texte anglais</div>
+          <div class="source-box">${escHtml(entry.original)}</div>
+        </div>
+        <div>
+          <div class="source-label">Traduction française</div>
+          <textarea id="trans-input" placeholder="Entrer la traduction ici…">${escHtml(entry.translation || '')}</textarea>
+        </div>
+        <div class="editor-actions">
+          <button class="btn btn-gold" onclick="saveAndNext()">Sauvegarder & Suivant</button>
+          <button class="btn btn-outline" onclick="saveCurrent()">Sauvegarder</button>
+        </div>`;
+
+      const ta = document.getElementById('trans-input');
+      ta.focus();
+      ta.addEventListener('keydown', e => {
+        if (e.ctrlKey && e.key === 'Enter') saveAndNext();
+      });
+    }
+
+    function saveCurrent() {
+      const ta = document.getElementById('trans-input');
+      if (!ta || current < 0) return;
+      const origEntry = filtered[current];
+      if (!origEntry) return;
+
+      // Update in entries array
+      const globalIdx = entries.findIndex(e => e.index === origEntry.index);
+      if (globalIdx >= 0) {
+        entries[globalIdx].translation = ta.value.trim();
+        filtered[current].translation = entries[globalIdx].translation;
+      }
+
+      updateStats();
+      renderList();
+      // Re-select to update highlight
+      document.querySelectorAll('.entry').forEach((el, i) => {
+        el.classList.toggle('selected', i === current);
+      });
+    }
+
+    function saveAndNext() {
+      saveCurrent();
+      navigate(1);
+    }
+
+    function navigate(dir) {
+      const next = current + dir;
+      if (next >= 0 && next < filtered.length) selectEntry(next);
+    }
+
+    function goTo(idx) {
+      if (idx >= 0 && idx < filtered.length) selectEntry(idx);
+    }
+
+    // ─── Stats ─────────────────────────────────────────────────────────────────
+    function updateStats() {
+      const done = entries.filter(e => !!e.translation).length;
+      const total = entries.length;
+      const pct = total ? Math.round(done / total * 100) : 0;
+      document.getElementById('stats').innerHTML =
+        `<span>${done}</span> / ${total} traduites (<span>${pct}%</span>)`;
+      document.getElementById('prog').style.width = pct + '%';
+    }
+
+    // ─── Export ────────────────────────────────────────────────────────────────
+    function exportFile() {
+      if (!entries.length) return;
+      let out = '';
+      for (const e of entries) {
+        out += `◇${e.index}◇${e.original}\n`;
+        out += `◆${e.index}◆${e.translation || e.original}\n`;
+        out += '\n';
+      }
+
+      const blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'chunk_traduit.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ─── Init filter ───────────────────────────────────────────────────────────
+    setFilter('all');
+  </script>
+</body>
+</html>
